@@ -1,6 +1,7 @@
 package com.ischeck.network
 
 import android.content.Context
+import com.example.socketiochat.network.SessionManager
 import okhttp3.Interceptor
 import okhttp3.Response
 
