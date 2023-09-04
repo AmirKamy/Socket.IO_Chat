@@ -2,10 +2,12 @@ package com.example.socketiochat
 
 import android.os.Bundle
 import android.content.Intent
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import com.example.socketiochat.common.EventObserver
 import com.example.socketiochat.databinding.FragmentMainAuthBinding
@@ -35,9 +37,22 @@ class MainAuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         sessionManager = SessionManager(requireContext())
 
+
+        binding.textInputUsername.editText?.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrEmpty()) binding.textInputUsername.error = null
+            else binding.textInputUsername.error = getString(R.string.required)
+        }
+        binding.textInputPassword.editText?.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrEmpty() && text.length >= 8) binding.textInputPassword.error = null
+            else if (text != null && text.isEmpty()) binding.textInputPassword.error = getString(R.string.required)
+            else if (text != null && text.length < 8) binding.textInputPassword.error = "you have to enter at least 8 character!"
+        }
+
+        binding.buttonLogin.setOnClickListener {
+            validateDataAndLogin()
+        }
+
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver{
-
-
             if (it is Resource.Loading)
                 // loading view
 
@@ -50,9 +65,10 @@ class MainAuthFragment : Fragment() {
             } else if (it is Resource.Failure) {
                // setProgressIndicator(false)
                 when {
-                    it.isNetworkError -> {} // connectionErrorAlertDialogMessage()
-                    it.errorCode == 500 ->{} // error500AlertDialogMessage()
-                    it.errorCode == 401 -> {} // cantFindAccountDialog()
+                    it.isNetworkError -> Log.e("error", "network") // connectionErrorAlertDialogMessage()
+                    it.errorCode == 500 -> Log.e("error", "500") // error500AlertDialogMessage()
+                    it.errorCode == 401 -> Log.e("error", "401") // cantFindAccountDialog()
+                    it.errorCode == 422 -> Log.e("error", "422") // cantFindAccountDialog()
                     else -> {
                        // showMessageErrorFromServer(it.errorBody)
                     }
@@ -62,10 +78,39 @@ class MainAuthFragment : Fragment() {
 
     }
 
+    private fun validateDataAndLogin() {
+        val username = binding.textInputUsername.editText?.text.toString().trim()
+        val password = binding.textInputPassword.editText?.text.toString().trim()
+
+        if (username.isEmpty()) {
+            binding.textInputUsername.error = getString(R.string.required)
+            binding.textInputUsername.requestFocus()
+            return
+        }
+        if (password.isEmpty()) {
+            binding.textInputPassword.error = getString(R.string.required)
+            binding.textInputPassword.requestFocus()
+            return
+        }
+
+        if (password.length < 8) {
+            binding.textInputPassword.error = "you have to enter at least 8 character!"
+            binding.textInputPassword.requestFocus()
+            return
+        }
+
+        login(username,password)
+
+    }
+
     private fun startMainActivity() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         requireContext().startActivity(intent)
         activity?.finish()
+    }
+
+    private fun login(username: String, password: String) {
+        viewModel.login(username, password)
     }
 
     override fun onDestroy() {

@@ -44,7 +44,7 @@ android {
 
 dependencies {
 
-    val nav_version = "2.7.1"
+    val nav_version = "2.5.0"
     val lifecycle_version = "2.5.0"
 
     implementation("androidx.core:core-ktx:1.9.0")
