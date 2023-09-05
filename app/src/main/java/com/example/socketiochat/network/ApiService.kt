@@ -3,6 +3,7 @@ package com.ischeck.network
 
 import android.content.Context
 import com.example.socketiochat.model.LoginResponse
+import com.example.socketiochat.model.Message
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
@@ -21,6 +22,10 @@ interface ApiService {
 
     @POST("auth/logout")
     suspend fun logout(): ResponseBody
+
+
+    @GET("message")
+    suspend fun getMessages(): List<Message>
 
     companion object {
 

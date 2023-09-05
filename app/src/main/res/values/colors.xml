@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_blue">#1B202D</color>
     <color name="grey">#9398A7</color>
+    <color name="other_message">#373E4E</color>
+    <color name="user_message">#7A8194</color>
 </resources>
