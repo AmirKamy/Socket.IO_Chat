@@ -24,8 +24,8 @@ interface ApiService {
     suspend fun logout(): ResponseBody
 
 
-    @GET("message")
-    suspend fun getMessages(): List<Message>
+    @POST("send_message")
+    fun postMessage(@Body body: Message): ResponseBody
 
     companion object {
 

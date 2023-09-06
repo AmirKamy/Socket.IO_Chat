@@ -28,7 +28,7 @@ class SessionManager (context: Context) {
     }
     fun saveUserProfile(user: User) {
         val editor = verifiedPrefs.edit()
-        editor.putString(USER_UID, user.uid)
+        editor.putString(USER_UID, user.user)
         editor.putString(USER_USERNAME, user.username)
         editor.apply()
     }
@@ -39,15 +39,12 @@ class SessionManager (context: Context) {
     fun fetchAuthToken(): String? {
         return tokenPrefs.getString(USER_TOKEN, null)
     }
-    fun fetchProfile(): User? {
+    fun fetchProfile(): User {
 
         val uid = verifiedPrefs.getString(USER_UID,"")
         val username = verifiedPrefs.getString(USER_USERNAME,"")
 
-        return if (uid != null && username != null)
-            User(uid,username)
-        else
-            null
+        return User(uid!!,username!!)
 
     }
 }

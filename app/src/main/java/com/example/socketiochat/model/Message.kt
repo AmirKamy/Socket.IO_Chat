@@ -1,6 +1,7 @@
 package com.example.socketiochat.model
 
 data class Message (
-    val text: String = "",
-    val sendBy: String = ""
+    var message: String,
+    var user: String,
+    var time: Long
 )

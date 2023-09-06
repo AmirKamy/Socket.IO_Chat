@@ -8,51 +8,87 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.socketiochat.R
 import com.example.socketiochat.model.Message
+import com.example.socketiochat.model.User
+import com.example.socketiochat.network.SessionManager
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class MessageAdapter(private val context: Context, private val chatList: ArrayList<Message>) :
-    RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
+class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHolder>() {
 
-    private val MESSAGE_TYPE_LEFT = 0
-    private val MESSAGE_TYPE_RIGHT = 1
+    private val messages: ArrayList<Message> = ArrayList()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        if (viewType == MESSAGE_TYPE_RIGHT) {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.message_right, parent, false)
-            return ViewHolder(view)
-        } else {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.message_left, parent, false)
-            return ViewHolder(view)
+    inner class MyMessageViewHolder (view: View) : MessageViewHolder(view) {
+        private var messageText: TextView = view.findViewById(R.id.message)
+        private var timeText: TextView = view.findViewById(R.id.time)
+
+        override fun bind(message: Message) {
+            messageText.text = message.message
+            timeText.text = DateUtils.fromMillisToTimeString(message.time)
         }
+    }
 
+    inner class OtherMessageViewHolder (view: View) : MessageViewHolder(view) {
+        private var messageText: TextView = view.findViewById(R.id.message)
+        private var timeText: TextView = view.findViewById(R.id.time)
+
+        override fun bind(message: Message) {
+            messageText.text = message.message
+            timeText.text = DateUtils.fromMillisToTimeString(message.time)
+        }
+    }
+
+
+    fun addMessage(message: Message){
+        messages.add(message)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        return chatList.size
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val chat = chatList[position]
-        holder.txtUserName.text = chat.text
-        //Glide.with(context).load(user.profileImage).placeholder(R.drawable.profile_image).into(holder.imgUser)
-
-    }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        val txtUserName: TextView = view.findViewById(R.id.message)
-//        val imgUser: CircleImageView = view.findViewById(R.id.userImage)
+        return messages.size
     }
 
     override fun getItemViewType(position: Int): Int {
-//        firebaseUser = FirebaseAuth.getInstance().currentUser
-//        chatList[position].senderId == firebaseUser!!.uid
-        if (true) {
-            return MESSAGE_TYPE_RIGHT
-        } else {
-            return MESSAGE_TYPE_LEFT
-        }
+        val message = messages[position]
 
+        val user: User = SessionManager(context).fetchProfile()
+
+        return if(user.user == message.user) {
+            VIEW_TYPE_MY_MESSAGE
+        }
+        else {
+            VIEW_TYPE_OTHER_MESSAGE
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
+        return if(viewType == VIEW_TYPE_MY_MESSAGE) {
+            MyMessageViewHolder(
+                LayoutInflater.from(context).inflate(R.layout.message_right, parent, false)
+            )
+        } else {
+            OtherMessageViewHolder(
+                LayoutInflater.from(context).inflate(R.layout.message_left, parent, false)
+            )
+        }
+    }
+
+    override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+        val message = messages[position]
+
+        holder.bind(message)
     }
 }
+
+open class MessageViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+    open fun bind(message: Message) {}
+}
+
+object DateUtils {
+    fun fromMillisToTimeString(millis: Long): String {
+        val format = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        return format.format(millis)
+    }
+}
+
+private const val VIEW_TYPE_MY_MESSAGE = 1
+private const val VIEW_TYPE_OTHER_MESSAGE = 2
