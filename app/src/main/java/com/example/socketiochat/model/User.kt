@@ -1,6 +1,7 @@
 package com.example.socketiochat.model
 
 data class User(
-    val user: String,
-    val avatar: String
+    val username: String,
+    val avatar: String,
+    val id: String
 )

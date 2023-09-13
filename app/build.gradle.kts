@@ -45,7 +45,7 @@ android {
 dependencies {
 
     val nav_version = "2.5.0"
-    val lifecycle_version = "2.5.0"
+    val lifecycle_version = "2.6.2"
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -63,8 +63,10 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.9")
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.9")
 
-    implementation ("com.google.dagger:hilt-android:2.44")
-    kapt ("com.google.dagger:hilt-compiler:2.44")
+    implementation ("com.google.dagger:hilt-android:2.48")
+    kapt ("com.google.dagger:hilt-compiler:2.48")
+
+
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
 
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
@@ -72,9 +74,13 @@ dependencies {
 
     implementation ("com.pusher:pusher-java-client:1.8.0")
 
+    implementation ("com.google.code.gson:gson:2.8.6")
+
 
 
 }
+
+
 
 kapt {
     correctErrorTypes = true

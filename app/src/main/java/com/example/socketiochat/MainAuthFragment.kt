@@ -53,12 +53,12 @@ class MainAuthFragment : Fragment() {
         }
 
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver{
-            if (it is Resource.Loading)
+//            if (it is Resource.Loading)
                 // loading view
 
             if (it is Resource.Success) {
-                sessionManager.saveAuthToken(it.value.access_token)
-                sessionManager.saveUserProfile(User(it.value.uid, it.value.username))
+                sessionManager.saveAuthToken(it.value.token)
+                sessionManager.saveUserProfile(it.value.user)
 
                 startMainActivity()
 
@@ -71,6 +71,7 @@ class MainAuthFragment : Fragment() {
                     it.errorCode == 422 -> Log.e("error", "422") // cantFindAccountDialog()
                     else -> {
                        // showMessageErrorFromServer(it.errorBody)
+                        Log.e("error", "no error")
                     }
                 }
             }

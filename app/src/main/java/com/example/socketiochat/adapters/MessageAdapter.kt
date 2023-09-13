@@ -23,7 +23,7 @@ class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHo
 
         override fun bind(message: Message) {
             messageText.text = message.message
-            timeText.text = DateUtils.fromMillisToTimeString(message.time)
+            timeText.text = message.created_at
         }
     }
 
@@ -33,13 +33,15 @@ class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHo
 
         override fun bind(message: Message) {
             messageText.text = message.message
-            timeText.text = DateUtils.fromMillisToTimeString(message.time)
+            timeText.text = message.created_at
         }
     }
 
 
-    fun addMessage(message: Message){
-        messages.add(message)
+    fun addMessage(message: List<Message>){
+        message.forEach {
+            messages.add(it)
+        }
         notifyDataSetChanged()
     }
 
@@ -52,7 +54,7 @@ class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHo
 
         val user: User = SessionManager(context).fetchProfile()
 
-        return if(user.user == message.user) {
+        return if(user.id == message.user.id) {
             VIEW_TYPE_MY_MESSAGE
         }
         else {

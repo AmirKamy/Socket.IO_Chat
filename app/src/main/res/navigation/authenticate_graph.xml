@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/authenticate_graph.xml">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/authenticate_graph.xml"
+    app:startDestination="@id/mainAuthFragment">
 
+    <fragment
+        android:id="@+id/mainAuthFragment"
+        android:name="com.example.socketiochat.MainAuthFragment"
+        android:label="fragment_main_auth"
+        tools:layout="@layout/fragment_main_auth" />
 </navigation>

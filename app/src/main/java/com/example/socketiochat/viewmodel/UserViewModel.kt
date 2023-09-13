@@ -24,7 +24,7 @@ class UserViewModel @Inject constructor(private val userRepository: UserReposito
         username: String,
         password: String
     ) = viewModelScope.launch {
-        _loginEvent.value = Event(Resource.Loading)
+       // _loginEvent.value = Event(Resource.Loading)
         _loginEvent.value = Event(userRepository.login(username, password))
     }
 

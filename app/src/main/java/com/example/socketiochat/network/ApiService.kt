@@ -4,6 +4,8 @@ package com.ischeck.network
 import android.content.Context
 import com.example.socketiochat.model.LoginResponse
 import com.example.socketiochat.model.Message
+import com.example.socketiochat.model.MessageResponse
+import com.example.socketiochat.model.MessageToServer
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
@@ -24,12 +26,15 @@ interface ApiService {
     suspend fun logout(): ResponseBody
 
 
-    @POST("send_message")
-    fun postMessage(@Body body: Message): ResponseBody
+    @POST("message/broadcast")
+    suspend fun postMessage(@Body message: MessageToServer): MessageResponse
+
+    @GET("message/index")
+    suspend fun getMessageHistory(): List<Message>
 
     companion object {
 
-        private const val BASE_URL = "base url"
+        private const val BASE_URL = "https://chatlink.iran.liara.run/api/v1/"
 
         fun create(context: Context): ApiService {
 
