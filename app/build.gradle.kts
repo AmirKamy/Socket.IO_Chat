@@ -76,6 +76,12 @@ dependencies {
 
     implementation ("com.google.code.gson:gson:2.8.6")
 
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+    kapt ("com.github.bumptech.glide:compiler:4.15.1")
+
+    implementation("io.coil-kt:coil:2.4.0")
+
 
 
 }

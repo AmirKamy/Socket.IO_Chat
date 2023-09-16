@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.example.socketiochat.adapters.MessageAdapter
 import com.example.socketiochat.common.EventObserver
 import com.example.socketiochat.databinding.FragmentChatBinding
@@ -25,6 +27,7 @@ import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatFragment : Fragment() {
@@ -34,6 +37,9 @@ class ChatFragment : Fragment() {
     private var _binding: FragmentChatBinding? = null
     private val viewModel: ChatViewModel by viewModels()
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var glide: RequestManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,9 +56,15 @@ class ChatFragment : Fragment() {
         user = SessionManager(requireContext()).fetchProfile()
         viewModel.getMessageHistory()
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val layoutManager = LinearLayoutManager(requireContext())
+        layoutManager.orientation = LinearLayoutManager.VERTICAL;
+        layoutManager.stackFromEnd = true;
+        layoutManager.isSmoothScrollbarEnabled = true;
+        layoutManager.reverseLayout = true;
 
-        adapter = MessageAdapter(requireContext())
+        binding.recyclerView.layoutManager = layoutManager
+
+        adapter = MessageAdapter(requireContext(), glide)
         binding.recyclerView.adapter = adapter
         setupPusher()
 
@@ -80,8 +92,8 @@ class ChatFragment : Fragment() {
             }
 
             if (it is Resource.Success) {
-                adapter.addMessage(it.value)
-                binding.recyclerView.scrollToPosition(adapter.itemCount - 1);
+                adapter.addHistoryMessage(it.value)
+                binding.recyclerView.scrollToPosition(1)
             }
 
         })
@@ -150,10 +162,10 @@ class ChatFragment : Fragment() {
 
             requireActivity().runOnUiThread {
 
-                adapter.addMessage(mutableListOf(message.message))
+                adapter.addNewMessage(message.message)
 
                 // scroll the RecyclerView to the last added element
-                binding.recyclerView.scrollToPosition(adapter.itemCount - 1);
+                binding.recyclerView.scrollToPosition(1)
             }
 
         }

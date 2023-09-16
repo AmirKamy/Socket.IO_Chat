@@ -14,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="09:12"
-        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toStartOf="@id/message"
         app:layout_constraintBottom_toBottomOf="@id/message"
         android:layout_marginEnd="5dp"/>
@@ -26,6 +27,7 @@
         android:background="@drawable/user_chat_shape"
         android:maxWidth="250dp"
         android:padding="12dp"
+        android:textSize="12sp"
         android:text="@{message.message}"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"

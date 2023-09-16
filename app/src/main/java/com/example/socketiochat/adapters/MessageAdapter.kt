@@ -1,21 +1,26 @@
 package com.example.socketiochat.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.example.socketiochat.R
 import com.example.socketiochat.model.Message
 import com.example.socketiochat.model.User
 import com.example.socketiochat.network.SessionManager
 import java.text.SimpleDateFormat
-import java.util.Locale
 
-class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHolder>() {
+class MessageAdapter (val context: Context, val glide: RequestManager) : RecyclerView.Adapter<MessageViewHolder>() {
 
-    private val messages: ArrayList<Message> = ArrayList()
+    private val messages = mutableListOf<Message>()
 
     inner class MyMessageViewHolder (view: View) : MessageViewHolder(view) {
         private var messageText: TextView = view.findViewById(R.id.message)
@@ -23,25 +28,35 @@ class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHo
 
         override fun bind(message: Message) {
             messageText.text = message.message
-            timeText.text = message.created_at
+            timeText.text = getDateTime(message.created_at)
         }
     }
 
     inner class OtherMessageViewHolder (view: View) : MessageViewHolder(view) {
         private var messageText: TextView = view.findViewById(R.id.message)
+        private var name: TextView = view.findViewById(R.id.name)
         private var timeText: TextView = view.findViewById(R.id.time)
+        private var avatar: ImageView = view.findViewById(R.id.avatar)
 
         override fun bind(message: Message) {
             messageText.text = message.message
-            timeText.text = message.created_at
+            timeText.text = getDateTime(message.created_at)
+            glide.load(message.user.avatar).circleCrop().into(avatar)
+            name.text = message.user.username
+            Log.i("avkir", message.user.avatar)
         }
     }
 
 
-    fun addMessage(message: List<Message>){
+    fun addHistoryMessage(message: List<Message>){
         message.forEach {
             messages.add(it)
         }
+        notifyDataSetChanged()
+    }
+
+    fun addNewMessage(newMessage: Message){
+        messages.add(0,newMessage)
         notifyDataSetChanged()
     }
 
@@ -79,17 +94,20 @@ class MessageAdapter (val context: Context) : RecyclerView.Adapter<MessageViewHo
 
         holder.bind(message)
     }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun getDateTime(s: String): String {
+
+        val parser = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val formatter = SimpleDateFormat("HH:mm")
+
+        return formatter.format(parser.parse(s))
+    }
+
 }
 
 open class MessageViewHolder (view: View) : RecyclerView.ViewHolder(view) {
     open fun bind(message: Message) {}
-}
-
-object DateUtils {
-    fun fromMillisToTimeString(millis: Long): String {
-        val format = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        return format.format(millis)
-    }
 }
 
 private const val VIEW_TYPE_MY_MESSAGE = 1
