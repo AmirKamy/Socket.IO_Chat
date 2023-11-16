@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import com.example.socketiochat.common.EventObserver
+import com.example.socketiochat.common.alertDialogMessage
+import com.example.socketiochat.common.showMessageErrorFromServer
 import com.example.socketiochat.databinding.FragmentMainAuthBinding
 import com.example.socketiochat.model.User
 import com.example.socketiochat.network.SessionManager
@@ -53,25 +55,27 @@ class MainAuthFragment : Fragment() {
         }
 
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver{
-//            if (it is Resource.Loading)
-                // loading view
+
+            Log.i("gggg", it.toString())
+
+            if (it is Resource.Loading){
+                binding.buttonLogin.startAnimation()
+            }
 
             if (it is Resource.Success) {
                 sessionManager.saveAuthToken(it.value.token)
                 sessionManager.saveUserProfile(it.value.user)
-
+                binding.buttonLogin.stopAnimation()
                 startMainActivity()
 
             } else if (it is Resource.Failure) {
-               // setProgressIndicator(false)
+                binding.buttonLogin.stopAnimation()
                 when {
-                    it.isNetworkError -> Log.e("error", "network") // connectionErrorAlertDialogMessage()
-                    it.errorCode == 500 -> Log.e("error", "500") // error500AlertDialogMessage()
-                    it.errorCode == 401 -> Log.e("error", "401") // cantFindAccountDialog()
-                    it.errorCode == 422 -> Log.e("error", "422") // cantFindAccountDialog()
+                    it.isNetworkError -> alertDialogMessage("Connection Error", "Please check your internet connection", "Ok")
+                    it.errorCode == 500 -> alertDialogMessage("Server Error", "we have problem in our server. please try again later", "Ok")
+                    it.errorCode == 422 -> alertDialogMessage("Username", "The username has already been taken", "Ok")
                     else -> {
-                       // showMessageErrorFromServer(it.errorBody)
-                        Log.e("error", "no error")
+                       showMessageErrorFromServer(it.errorBody)
                     }
                 }
             }

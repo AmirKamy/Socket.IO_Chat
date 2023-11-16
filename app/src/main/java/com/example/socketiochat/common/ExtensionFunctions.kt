@@ -9,6 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
+import com.example.socketiochat.MainActivity
 import com.example.socketiochat.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
@@ -79,100 +81,66 @@ import org.json.JSONObject
 //    alertDialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
 //}
 //
-//fun Fragment.alertDialogMessage(
-//    title: String,
-//    message: String,
-//    posButtonText: String,
-//    negButtonText: String?,
-//    action: NavDirections? = null,
-//    backPressed: Boolean? = null,
-//) {
-//
-//    val alertView = LayoutInflater.from(requireContext()).inflate(R.layout.alert_dialog_message, null)
-//    val alert = AlertDialog.Builder(requireContext())
-//    alert.setView(alertView)
-//    val alertDialog = alert.create()
-//    alertDialog.window?.setBackgroundDrawable(
-//        ContextCompat.getDrawable(
-//            requireContext(),
-//            R.drawable.round_corner
-//        )
-//    )
-//    alertDialog.show()
-//    alertView.findViewById<TextView>(R.id.txt_title).text = title
-//    alertView.findViewById<TextView>(R.id.txt_body).text = message
-//    val pos = alertView.findViewById<MaterialButton>(R.id.button_positive)
-//    pos.text = posButtonText
-//    val neg = alertView.findViewById<MaterialButton>(R.id.button_negative)
-//    neg.text = negButtonText
-//
-//    if (negButtonText == null)
-//        neg.visibility = View.GONE
-//
-//    neg.setOnClickListener {
-//        alertDialog.dismiss()
-//    }
-//    pos.setOnClickListener {
-//        alertDialog.dismiss()
-//        if (action != null){
-//            findNavController().navigate(action)
-//
-//        }else if (backPressed == true){
-////            val queue = findNavController().backQueue
-////            if (findNavController().previousBackStackEntry?.destination?.id == R.id.openPositionsFragment){
-////                findNavController().popBackStack(queue[1].destination.id,false)
-////            }else{
-////                findNavController().popBackStack(queue[2].destination.id,false)
-////            }
-//            findNavController().popBackStack()
-//        }else if(backPressed == false){
-////            val queue = findNavController().backQueue
-////            findNavController().popBackStack(queue[1].destination.id,false)
-//            findNavController().popBackStack()
-//        }
-//
-//
-//
-//
-//    }
-//
-//    val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
-//    alertDialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
-//
-//}
-//
-//fun Fragment.logOutMessage() {
-//    val alertView = LayoutInflater.from(requireContext()).inflate(R.layout.alert_dialog_message, null)
-//    val alert = AlertDialog.Builder(requireContext())
-//    alert.setView(alertView)
-//    val alertDialog = alert.create()
-//    alertDialog.window?.setBackgroundDrawable(
-//        ContextCompat.getDrawable(
-//            requireContext(), R.drawable.round_corner
-//        )
-//    )
-//    alertDialog.show()
-//    alertView.findViewById<TextView>(R.id.txt_title).text = "Authenticate required"
-//    alertView.findViewById<TextView>(R.id.txt_body).text =
-//        "your session has expired! please log in to continue"
-//    val pos = alertView.findViewById<MaterialButton>(R.id.button_positive)
-//    pos.text = "Log in"
-//    val neg = alertView.findViewById<MaterialButton>(R.id.button_negative)
-//
-//    neg.visibility = View.GONE
-//
-//    pos.setOnClickListener {
-//        (activity as MainActivity).performLogout()
-//    }
-//
-//    alertDialog.setOnCancelListener {
-//        (activity as MainActivity).performLogout()
-//    }
-//
-//    val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
-//    alertDialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
-//}
-//
+fun Fragment.alertDialogMessage(
+    title: String,
+    message: String,
+    buttonText: String
+) {
+
+    val alertView = LayoutInflater.from(requireContext()).inflate(R.layout.alert_dialog_message, null)
+    val alert = AlertDialog.Builder(requireContext())
+    alert.setView(alertView)
+    val alertDialog = alert.create()
+    alertDialog.window?.setBackgroundDrawable(
+        ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.round_corner
+        )
+    )
+    alertDialog.show()
+    alertView.findViewById<TextView>(R.id.txt_title).text = title
+    alertView.findViewById<TextView>(R.id.txt_body).text = message
+    val pos = alertView.findViewById<MaterialButton>(R.id.button_positive)
+    pos.text = buttonText
+
+    pos.setOnClickListener {
+        alertDialog.dismiss()
+    }
+
+    val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
+    alertDialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+}
+
+fun Fragment.logOutMessage() {
+    val alertView = LayoutInflater.from(requireContext()).inflate(R.layout.alert_dialog_message, null)
+    val alert = AlertDialog.Builder(requireContext())
+    alert.setView(alertView)
+    val alertDialog = alert.create()
+    alertDialog.window?.setBackgroundDrawable(
+        ContextCompat.getDrawable(
+            requireContext(), R.drawable.round_corner
+        )
+    )
+    alertDialog.show()
+    alertView.findViewById<TextView>(R.id.txt_title).text = "Authenticate required"
+    alertView.findViewById<TextView>(R.id.txt_body).text =
+        "your session has expired! please log in to continue"
+    val pos = alertView.findViewById<MaterialButton>(R.id.button_positive)
+    pos.text = "Log in"
+
+    pos.setOnClickListener {
+        (activity as MainActivity).performLogout()
+    }
+
+    alertDialog.setOnCancelListener {
+        (activity as MainActivity).performLogout()
+    }
+
+    val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
+    alertDialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+}
+
 //fun Fragment.cantFindAccountDialog() {
 //    val alertView = LayoutInflater.from(requireContext()).inflate(R.layout.incorrect_password_alert_dialog, null)
 //    val alert = AlertDialog.Builder(requireContext())
@@ -239,10 +207,10 @@ fun View.enable(enabled: Boolean) {
     alpha = if (enabled) 1f else 0.5f
 }
 
-//fun Fragment.showMessageErrorFromServer(errorBody: ResponseBody?){
-//    if (errorBody != null){
-//        val json = JSONObject(errorBody.string())
-//        val status = json.getString("message")
-//        alertDialogMessage("Error!", status, "Ok", null, null)
-//    }
-//}
+fun Fragment.showMessageErrorFromServer(errorBody: ResponseBody?){
+    if (errorBody != null){
+        val json = JSONObject(errorBody.string())
+        val status = json.getString("message")
+        alertDialogMessage("Error!", status, "Ok")
+    }
+}
